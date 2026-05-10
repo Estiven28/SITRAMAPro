@@ -1,0 +1,1692 @@
+📁 Estructura del Proyecto
+src/
+├── app/
+│   ├── App.tsx
+│   ├── routes.tsx
+│   └── components/
+│       ├── SplashScreen.tsx
+│       ├── Login.tsx
+│       ├── Register.tsx
+│       ├── Layout.tsx
+│       ├── Dashboard.tsx
+│       ├── ReportCase.tsx
+│       ├── CaseTracking.tsx
+│       ├── AdminPanel.tsx
+│       ├── Notifications.tsx
+│       └── Profile.tsx
+└── package.json
+📄 src/app/App.tsx
+import { RouterProvider } from "react-router";
+import { router } from "./routes";
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+📄 src/app/routes.tsx
+import { createBrowserRouter } from "react-router";
+import { SplashScreen } from "./components/SplashScreen";
+import { Login } from "./components/Login";
+import { Register } from "./components/Register";
+import { Dashboard } from "./components/Dashboard";
+import { ReportCase } from "./components/ReportCase";
+import { CaseTracking } from "./components/CaseTracking";
+import { AdminPanel } from "./components/AdminPanel";
+import { Notifications } from "./components/Notifications";
+import { Profile } from "./components/Profile";
+import { Layout } from "./components/Layout";
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <SplashScreen />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/app",
+    element: <Layout />,
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "report", element: <ReportCase /> },
+      { path: "tracking", element: <CaseTracking /> },
+      { path: "admin", element: <AdminPanel /> },
+      { path: "notifications", element: <Notifications /> },
+      { path: "profile", element: <Profile /> },
+    ],
+  },
+]);
+📄 src/app/components/SplashScreen.tsx
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { Shield, Heart } from "lucide-react";
+
+export function SplashScreen() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/login");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#1E88E5] to-[#1565C0] flex flex-col items-center justify-center p-6">
+      <div className="animate-fade-in">
+        <div className="relative mb-8">
+          <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-2xl">
+            <Shield className="w-16 h-16 text-[#1E88E5]" strokeWidth={2} />
+            <Heart className="w-8 h-8 text-[#FF6B35] absolute bottom-2 right-2" fill="#FF6B35" />
+          </div>
+        </div>
+
+        <h1 className="text-5xl font-bold text-white text-center mb-4 tracking-tight">
+          SITRAMA
+        </h1>
+
+        <p className="text-white/90 text-center text-lg max-w-sm mx-auto leading-relaxed">
+          Sistema de Trazabilidad para Casos de Maltrato y Abandono Animal
+        </p>
+
+        <p className="text-white/80 text-center text-sm mt-6 font-medium">
+          Protegiendo a quienes no tienen voz
+        </p>
+      </div>
+
+      <div className="absolute bottom-12">
+        <div className="flex gap-2">
+          <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse" style={{ animationDelay: "0.2s" }} />
+          <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse" style={{ animationDelay: "0.4s" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/Login.tsx
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { Shield, Mail, Lock, Eye, EyeOff } from "lucide-react";
+
+export function Login() {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate("/app");
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-12 pb-24 px-6">
+        <div className="flex items-center justify-center mb-6">
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
+            <Shield className="w-8 h-8 text-[#1E88E5]" strokeWidth={2} />
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold text-white text-center mb-2">
+          Bienvenido a SITRAMA
+        </h1>
+        <p className="text-white/90 text-center text-sm">
+          Inicia sesión para continuar
+        </p>
+      </div>
+
+      <div className="flex-1 -mt-12 px-6">
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Correo electrónico
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ejemplo@correo.com"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5 text-gray-400" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="text-sm text-[#1E88E5] font-medium hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02]"
+            >
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              ¿No tienes una cuenta?{" "}
+              <button
+                onClick={() => navigate("/register")}
+                className="text-[#1E88E5] font-medium hover:underline"
+              >
+                Regístrate aquí
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <p className="text-center text-xs text-gray-500 mt-8 mb-6">
+          Al continuar, aceptas nuestros términos y condiciones
+        </p>
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/Register.tsx
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { Shield, User, Mail, Lock, ChevronLeft } from "lucide-react";
+
+export function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    userType: "citizen",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate("/app");
+  };
+
+  const updateField = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-20 px-6">
+        <button
+          onClick={() => navigate("/login")}
+          className="text-white flex items-center gap-2 mb-6"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span>Volver</span>
+        </button>
+
+        <div className="flex items-center justify-center mb-4">
+          <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
+            <Shield className="w-7 h-7 text-[#1E88E5]" strokeWidth={2} />
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold text-white text-center mb-2">
+          Crear Cuenta
+        </h1>
+        <p className="text-white/90 text-center text-sm">
+          Únete a la protección animal
+        </p>
+      </div>
+
+      <div className="flex-1 -mt-12 px-6 pb-6">
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre completo
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => updateField("name", e.target.value)}
+                  placeholder="Tu nombre completo"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Correo electrónico
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => updateField("email", e.target.value)}
+                  placeholder="ejemplo@correo.com"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => updateField("password", e.target.value)}
+                  placeholder="Mínimo 8 caracteres"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirmar contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => updateField("confirmPassword", e.target.value)}
+                  placeholder="Repite tu contraseña"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de usuario
+              </label>
+              <select
+                value={formData.userType}
+                onChange={(e) => updateField("userType", e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+              >
+                <option value="citizen">Ciudadano</option>
+                <option value="volunteer">Voluntario</option>
+                <option value="organization">Organización</option>
+                <option value="authority">Autoridad</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] mt-6"
+            >
+              Crear Cuenta
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              ¿Ya tienes cuenta?{" "}
+              <button
+                onClick={() => navigate("/login")}
+                className="text-[#1E88E5] font-medium hover:underline"
+              >
+                Inicia sesión
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/Layout.tsx
+import { Outlet, useNavigate, useLocation } from "react-router";
+import { Home, FileText, Bell, User } from "lucide-react";
+
+export function Layout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    { path: "/app", icon: Home, label: "Inicio" },
+    { path: "/app/tracking", icon: FileText, label: "Casos" },
+    { path: "/app/notifications", icon: Bell, label: "Alertas" },
+    { path: "/app/profile", icon: User, label: "Perfil" },
+  ];
+
+  const isActive = (path: string) => {
+    if (path === "/app") {
+      return location.pathname === "/app";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <Outlet />
+
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-3 shadow-lg">
+        <div className="flex justify-around items-center max-w-md mx-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className="flex flex-col items-center gap-1 min-w-[60px]"
+              >
+                <div className={`p-2 rounded-xl transition-all ${
+                  active
+                    ? "bg-[#1E88E5] text-white"
+                    : "text-gray-500"
+                }`}>
+                  <Icon className="w-5 h-5" strokeWidth={2} />
+                </div>
+                <span className={`text-xs font-medium ${
+                  active ? "text-[#1E88E5]" : "text-gray-500"
+                }`}>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
+  );
+}
+📄 src/app/components/Dashboard.tsx
+import { useNavigate } from "react-router";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Plus,
+  TrendingUp,
+  MapPin,
+  Shield,
+  Heart
+} from "lucide-react";
+
+export function Dashboard() {
+  const navigate = useNavigate();
+
+  const stats = [
+    { label: "Casos Activos", value: "24", icon: Clock, color: "text-orange-500", bg: "bg-orange-50" },
+    { label: "Resueltos", value: "156", icon: CheckCircle, color: "text-green-500", bg: "bg-green-50" },
+    { label: "Urgentes", value: "3", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" },
+  ];
+
+  const recentCases = [
+    {
+      id: 1,
+      title: "Perro abandonado en Kennedy",
+      location: "Kennedy, Bogotá",
+      status: "pending",
+      time: "Hace 2 horas",
+      severity: "high",
+    },
+    {
+      id: 2,
+      title: "Gato herido en Chapinero",
+      location: "Chapinero, Bogotá",
+      status: "in-progress",
+      time: "Hace 5 horas",
+      severity: "medium",
+    },
+    {
+      id: 3,
+      title: "Maltrato animal reportado",
+      location: "Suba, Bogotá",
+      status: "pending",
+      time: "Hace 1 día",
+      severity: "high",
+    },
+  ];
+
+  const quickActions = [
+    { label: "Reportar Caso", icon: Plus, action: () => navigate("/app/report"), gradient: "from-[#1E88E5] to-[#1565C0]" },
+    { label: "Ver Admin", icon: Shield, action: () => navigate("/app/admin"), gradient: "from-[#FF6B35] to-[#FF8C42]" },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    const badges = {
+      pending: { label: "Pendiente", class: "bg-yellow-100 text-yellow-700" },
+      "in-progress": { label: "En proceso", class: "bg-blue-100 text-blue-700" },
+      resolved: { label: "Resuelto", class: "bg-green-100 text-green-700" },
+    };
+    return badges[status as keyof typeof badges];
+  };
+
+  const getSeverityColor = (severity: string) => {
+    return severity === "high" ? "border-l-4 border-l-red-500" : "border-l-4 border-l-orange-400";
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-20 px-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-1">
+              ¡Hola, Juan!
+            </h1>
+            <p className="text-white/90 text-sm">
+              Bienvenido a SITRAMA
+            </p>
+          </div>
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <Heart className="w-6 h-6 text-white" fill="white" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          {stats.map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <div key={idx} className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                <div className={`w-8 h-8 ${stat.bg} rounded-lg flex items-center justify-center mb-2`}>
+                  <Icon className={`w-4 h-4 ${stat.color}`} />
+                </div>
+                <p className="text-2xl font-bold text-white mb-1">{stat.value}</p>
+                <p className="text-white/80 text-xs leading-tight">{stat.label}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="-mt-12 px-6 pb-6 space-y-6">
+        <div className="grid grid-cols-2 gap-3">
+          {quickActions.map((action, idx) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={idx}
+                onClick={action.action}
+                className={`bg-gradient-to-r ${action.gradient} text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] flex flex-col items-center gap-2`}
+              >
+                <Icon className="w-6 h-6" strokeWidth={2} />
+                <span className="text-sm font-medium">{action.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-md p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-800">Casos Recientes</h2>
+            <TrendingUp className="w-5 h-5 text-[#1E88E5]" />
+          </div>
+
+          <div className="space-y-3">
+            {recentCases.map((caseItem) => {
+              const statusBadge = getStatusBadge(caseItem.status);
+              return (
+                <div
+                  key={caseItem.id}
+                  className={`bg-gray-50 rounded-xl p-4 hover:shadow-md transition-all cursor-pointer ${getSeverityColor(caseItem.severity)}`}
+                  onClick={() => navigate("/app/tracking")}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold text-gray-800 text-sm">
+                      {caseItem.title}
+                    </h3>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusBadge.class}`}>
+                      {statusBadge.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                    <MapPin className="w-3 h-3" />
+                    <span>{caseItem.location}</span>
+                  </div>
+                  <p className="text-xs text-gray-500">{caseItem.time}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-[#FF6B35]/10 to-[#FF8C42]/10 border border-[#FF6B35]/20 rounded-xl p-4">
+          <div className="flex gap-3">
+            <div className="w-10 h-10 bg-[#FF6B35] rounded-full flex items-center justify-center flex-shrink-0">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-1">Tip del día</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Recuerda adjuntar fotografías claras y la ubicación exacta al reportar un caso.
+                Esto ayuda a una respuesta más rápida.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/ReportCase.tsx
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import {
+  ChevronLeft,
+  Camera,
+  MapPin,
+  Calendar,
+  AlertCircle,
+  FileText,
+  Upload,
+  CheckCircle
+} from "lucide-react";
+
+export function ReportCase() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    animalType: "",
+    severity: "",
+    location: "",
+    date: "",
+  });
+  const [images, setImages] = useState<string[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => {
+      navigate("/app/tracking");
+    }, 2000);
+  };
+
+  const updateField = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            ¡Reporte Enviado!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Tu caso ha sido registrado exitosamente.<br />
+            Recibirás notificaciones sobre su estado.
+          </p>
+          <div className="animate-pulse text-[#1E88E5] text-sm">
+            Redirigiendo...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-16 px-6">
+        <button
+          onClick={() => navigate("/app")}
+          className="text-white flex items-center gap-2 mb-6"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span>Volver</span>
+        </button>
+
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Reportar Caso
+        </h1>
+        <p className="text-white/90 text-sm">
+          Completa el formulario con los detalles del incidente
+        </p>
+      </div>
+
+      <div className="-mt-8 px-6 pb-6">
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <FileText className="w-4 h-4 inline mr-1" />
+                Título del caso
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => updateField("title", e.target.value)}
+                placeholder="Ej: Perro abandonado en parque"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descripción detallada
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => updateField("description", e.target.value)}
+                placeholder="Describe lo que observaste: condición del animal, circunstancias, etc."
+                rows={4}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition resize-none"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo de animal
+                </label>
+                <select
+                  value={formData.animalType}
+                  onChange={(e) => updateField("animalType", e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="dog">Perro</option>
+                  <option value="cat">Gato</option>
+                  <option value="bird">Ave</option>
+                  <option value="other">Otro</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <AlertCircle className="w-4 h-4 inline mr-1" />
+                  Gravedad
+                </label>
+                <select
+                  value={formData.severity}
+                  onChange={(e) => updateField("severity", e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="low">Baja</option>
+                  <option value="medium">Media</option>
+                  <option value="high">Alta</option>
+                  <option value="critical">Crítica</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <MapPin className="w-4 h-4 inline mr-1" />
+                Ubicación
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => updateField("location", e.target.value)}
+                  placeholder="Ej: Carrera 7 con Calle 45, Kennedy"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1E88E5] text-sm font-medium"
+                >
+                  Usar GPS
+                </button>
+              </div>
+              <div className="mt-3 bg-gray-100 rounded-xl h-32 flex items-center justify-center text-gray-400">
+                <MapPin className="w-6 h-6 mr-2" />
+                <span className="text-sm">Vista previa del mapa</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Calendar className="w-4 h-4 inline mr-1" />
+                Fecha del incidente
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => updateField("date", e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1E88E5] focus:border-transparent outline-none transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Camera className="w-4 h-4 inline mr-1" />
+                Fotografías (opcional)
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#1E88E5] transition cursor-pointer">
+                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600 mb-1">
+                  Toca para subir fotografías
+                </p>
+                <p className="text-xs text-gray-500">
+                  PNG, JPG hasta 10MB
+                </p>
+              </div>
+              {images.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  {images.map((img, idx) => (
+                    <div key={idx} className="aspect-square bg-gray-200 rounded-lg" />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] text-white py-4 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] mt-6"
+            >
+              Enviar Reporte
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/CaseTracking.tsx
+import { useState } from "react";
+import {
+  Search,
+  Filter,
+  MapPin,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Eye
+} from "lucide-react";
+
+export function CaseTracking() {
+  const [selectedCase, setSelectedCase] = useState<number | null>(null);
+  const [filter, setFilter] = useState("all");
+
+  const cases = [
+    {
+      id: 1,
+      title: "Perro abandonado en Kennedy",
+      location: "Kennedy, Bogotá",
+      status: "pending",
+      date: "2026-05-09",
+      severity: "high",
+      description: "Perro de raza mediana encontrado sin collar ni identificación",
+      timeline: [
+        { date: "2026-05-09 14:30", event: "Caso reportado", status: "completed" },
+        { date: "2026-05-09 15:00", event: "Caso asignado a autoridad", status: "completed" },
+        { date: "2026-05-10 09:00", event: "Investigación en proceso", status: "in-progress" },
+        { date: "Pendiente", event: "Resolución del caso", status: "pending" },
+      ],
+    },
+    {
+      id: 2,
+      title: "Gato herido en Chapinero",
+      location: "Chapinero, Bogotá",
+      status: "in-progress",
+      date: "2026-05-09",
+      severity: "medium",
+      description: "Gato con herida en pata trasera, necesita atención veterinaria",
+      timeline: [
+        { date: "2026-05-09 09:15", event: "Caso reportado", status: "completed" },
+        { date: "2026-05-09 10:00", event: "Veterinario asignado", status: "completed" },
+        { date: "2026-05-09 14:30", event: "Gato rescatado y en tratamiento", status: "in-progress" },
+        { date: "Pendiente", event: "Alta médica", status: "pending" },
+      ],
+    },
+    {
+      id: 3,
+      title: "Maltrato animal reportado",
+      location: "Suba, Bogotá",
+      status: "resolved",
+      date: "2026-05-08",
+      severity: "high",
+      description: "Caso de maltrato resuelto, animal en refugio seguro",
+      timeline: [
+        { date: "2026-05-08 16:00", event: "Caso reportado", status: "completed" },
+        { date: "2026-05-08 17:30", event: "Visita de autoridades", status: "completed" },
+        { date: "2026-05-08 19:00", event: "Animal rescatado", status: "completed" },
+        { date: "2026-05-09 10:00", event: "Caso resuelto - Animal en refugio", status: "completed" },
+      ],
+    },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    const badges = {
+      pending: { label: "Pendiente", class: "bg-yellow-100 text-yellow-700", icon: Clock },
+      "in-progress": { label: "En proceso", class: "bg-blue-100 text-blue-700", icon: AlertCircle },
+      resolved: { label: "Resuelto", class: "bg-green-100 text-green-700", icon: CheckCircle },
+    };
+    return badges[status as keyof typeof badges];
+  };
+
+  const getSeverityBadge = (severity: string) => {
+    const badges = {
+      low: { label: "Baja", class: "bg-gray-100 text-gray-700" },
+      medium: { label: "Media", class: "bg-orange-100 text-orange-700" },
+      high: { label: "Alta", class: "bg-red-100 text-red-700" },
+      critical: { label: "Crítica", class: "bg-red-600 text-white" },
+    };
+    return badges[severity as keyof typeof badges];
+  };
+
+  const filteredCases = filter === "all" ? cases : cases.filter(c => c.status === filter);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-16 px-6">
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Seguimiento de Casos
+        </h1>
+        <p className="text-white/90 text-sm mb-6">
+          Monitorea el estado de tus reportes
+        </p>
+
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar casos..."
+            className="w-full pl-12 pr-4 py-3 rounded-xl border-0 focus:ring-2 focus:ring-white/50 outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="-mt-8 px-6 pb-6">
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+          {[
+            { value: "all", label: "Todos" },
+            { value: "pending", label: "Pendientes" },
+            { value: "in-progress", label: "En proceso" },
+            { value: "resolved", label: "Resueltos" },
+          ].map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition ${
+                filter === f.value
+                  ? "bg-[#1E88E5] text-white shadow-md"
+                  : "bg-white text-gray-600 border border-gray-200"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          {filteredCases.map((caseItem) => {
+            const statusBadge = getStatusBadge(caseItem.status);
+            const severityBadge = getSeverityBadge(caseItem.severity);
+            const StatusIcon = statusBadge.icon;
+            const isExpanded = selectedCase === caseItem.id;
+
+            return (
+              <div key={caseItem.id} className="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div
+                  className="p-4 cursor-pointer"
+                  onClick={() => setSelectedCase(isExpanded ? null : caseItem.id)}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-800 mb-1">
+                        {caseItem.title}
+                      </h3>
+                      <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                        <MapPin className="w-3 h-3" />
+                        <span>{caseItem.location}</span>
+                      </div>
+                    </div>
+                    <Eye className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  <div className="flex gap-2 mb-2">
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${statusBadge.class} flex items-center gap-1`}>
+                      <StatusIcon className="w-3 h-3" />
+                      {statusBadge.label}
+                    </span>
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${severityBadge.class}`}>
+                      {severityBadge.label}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-500">
+                    Reportado: {new Date(caseItem.date).toLocaleDateString('es-CO')}
+                  </p>
+                </div>
+
+                {isExpanded && (
+                  <div className="border-t border-gray-100 p-4 bg-gray-50">
+                    <p className="text-sm text-gray-700 mb-4">
+                      {caseItem.description}
+                    </p>
+
+                    <h4 className="font-semibold text-gray-800 mb-3 text-sm">
+                      Línea de tiempo
+                    </h4>
+
+                    <div className="space-y-3">
+                      {caseItem.timeline.map((item, idx) => (
+                        <div key={idx} className="flex gap-3">
+                          <div className="flex flex-col items-center">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              item.status === "completed"
+                                ? "bg-green-500"
+                                : item.status === "in-progress"
+                                ? "bg-blue-500"
+                                : "bg-gray-300"
+                            }`}>
+                              {item.status === "completed" && (
+                                <CheckCircle className="w-4 h-4 text-white" />
+                              )}
+                              {item.status === "in-progress" && (
+                                <Clock className="w-4 h-4 text-white animate-pulse" />
+                              )}
+                            </div>
+                            {idx < caseItem.timeline.length - 1 && (
+                              <div className={`w-0.5 flex-1 min-h-[20px] ${
+                                item.status === "completed" ? "bg-green-300" : "bg-gray-200"
+                              }`} />
+                            )}
+                          </div>
+                          <div className="flex-1 pb-4">
+                            <p className="text-sm font-medium text-gray-800">
+                              {item.event}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {item.date}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {filteredCases.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Filter className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500">No hay casos en esta categoría</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/AdminPanel.tsx
+import { useState } from "react";
+import {
+  BarChart3,
+  Users,
+  MapPin,
+  TrendingUp,
+  Filter,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Download
+} from "lucide-react";
+
+export function AdminPanel() {
+  const [selectedFilter, setSelectedFilter] = useState("all");
+
+  const stats = [
+    { label: "Total Casos", value: "183", change: "+12%", icon: BarChart3, color: "bg-blue-500" },
+    { label: "Usuarios Activos", value: "1,247", change: "+8%", icon: Users, color: "bg-green-500" },
+    { label: "Localidades", value: "20", change: "0%", icon: MapPin, color: "bg-purple-500" },
+    { label: "Tasa Resolución", value: "85%", change: "+5%", icon: TrendingUp, color: "bg-orange-500" },
+  ];
+
+  const localityData = [
+    { name: "Kennedy", total: 45, pending: 12, resolved: 33 },
+    { name: "Suba", total: 38, pending: 8, resolved: 30 },
+    { name: "Engativá", total: 29, pending: 6, resolved: 23 },
+    { name: "Chapinero", total: 24, pending: 5, resolved: 19 },
+    { name: "Usaquén", total: 18, pending: 4, resolved: 14 },
+  ];
+
+  const recentReports = [
+    { id: "REP-2301", title: "Perro herido", locality: "Kennedy", status: "pending", priority: "high" },
+    { id: "REP-2302", title: "Gato abandonado", locality: "Suba", status: "in-progress", priority: "medium" },
+    { id: "REP-2303", title: "Maltrato reportado", locality: "Chapinero", status: "pending", priority: "high" },
+    { id: "REP-2304", title: "Animal extraviado", locality: "Usaquén", status: "resolved", priority: "low" },
+  ];
+
+  const getStatusIcon = (status: string) => {
+    const icons = {
+      pending: <Clock className="w-4 h-4 text-yellow-600" />,
+      "in-progress": <AlertCircle className="w-4 h-4 text-blue-600" />,
+      resolved: <CheckCircle className="w-4 h-4 text-green-600" />,
+    };
+    return icons[status as keyof typeof icons];
+  };
+
+  const getPriorityColor = (priority: string) => {
+    const colors = {
+      low: "bg-gray-100 text-gray-700",
+      medium: "bg-orange-100 text-orange-700",
+      high: "bg-red-100 text-red-700",
+    };
+    return colors[priority as keyof typeof colors];
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-16 px-6">
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Panel Administrativo
+        </h1>
+        <p className="text-white/90 text-sm">
+          Gestión y estadísticas del sistema
+        </p>
+      </div>
+
+      <div className="-mt-8 px-6 pb-6 space-y-6">
+        <div className="grid grid-cols-2 gap-3">
+          {stats.map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <div key={idx} className="bg-white rounded-2xl shadow-md p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className={`w-10 h-10 ${stat.color} rounded-xl flex items-center justify-center`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                    {stat.change}
+                  </span>
+                </div>
+                <p className="text-2xl font-bold text-gray-800 mb-1">
+                  {stat.value}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {stat.label}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-md p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-800">
+              Casos por Localidad
+            </h2>
+            <button className="text-[#1E88E5] text-sm font-medium flex items-center gap-1">
+              <Download className="w-4 h-4" />
+              Exportar
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {localityData.map((locality, idx) => {
+              const percentage = (locality.resolved / locality.total) * 100;
+              return (
+                <div key={idx} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium text-gray-800 text-sm">
+                      {locality.name}
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      {locality.total} casos
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
+                    <div
+                      className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] h-2 rounded-full transition-all"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <div className="flex gap-4 text-xs">
+                    <span className="text-green-600">
+                      ✓ {locality.resolved} resueltos
+                    </span>
+                    <span className="text-yellow-600">
+                      ⏱ {locality.pending} pendientes
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-md p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-800">
+              Gestión de Reportes
+            </h2>
+            <button className="text-gray-400">
+              <Filter className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+            {[
+              { value: "all", label: "Todos" },
+              { value: "pending", label: "Pendientes" },
+              { value: "in-progress", label: "En proceso" },
+            ].map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setSelectedFilter(f.value)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                  selectedFilter === f.value
+                    ? "bg-[#1E88E5] text-white"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-2">
+            {recentReports.map((report) => (
+              <div
+                key={report.id}
+                className="bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition cursor-pointer"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-mono text-gray-500">
+                        {report.id}
+                      </span>
+                      {getStatusIcon(report.status)}
+                    </div>
+                    <h3 className="font-medium text-gray-800 text-sm">
+                      {report.title}
+                    </h3>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(report.priority)}`}>
+                    {report.priority === "high" ? "Alta" : report.priority === "medium" ? "Media" : "Baja"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {report.locality}
+                  </span>
+                  <button className="text-xs text-[#1E88E5] font-medium">
+                    Gestionar →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4">
+          <div className="flex gap-3">
+            <div className="w-10 h-10 bg-[#1E88E5] rounded-full flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-1 text-sm">
+                Rendimiento del Sistema
+              </h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                El tiempo promedio de resolución ha mejorado un 15% este mes.
+                Kennedy y Suba lideran en reportes activos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/Notifications.tsx
+import { Bell, CheckCircle, AlertCircle, Info, Clock } from "lucide-react";
+
+export function Notifications() {
+  const notifications = [
+    {
+      id: 1,
+      type: "update",
+      title: "Actualización de caso",
+      message: "Tu reporte 'Perro abandonado en Kennedy' ha sido asignado a una autoridad",
+      time: "Hace 30 min",
+      read: false,
+      icon: CheckCircle,
+      color: "text-green-500",
+      bg: "bg-green-50",
+    },
+    {
+      id: 2,
+      type: "alert",
+      title: "Caso urgente cerca",
+      message: "Se reportó un caso crítico en tu zona. Localidad: Kennedy",
+      time: "Hace 2 horas",
+      read: false,
+      icon: AlertCircle,
+      color: "text-red-500",
+      bg: "bg-red-50",
+    },
+    {
+      id: 3,
+      type: "info",
+      title: "Nueva funcionalidad",
+      message: "Ahora puedes seguir casos en tiempo real con nuestra línea de tiempo mejorada",
+      time: "Hace 5 horas",
+      read: true,
+      icon: Info,
+      color: "text-blue-500",
+      bg: "bg-blue-50",
+    },
+    {
+      id: 4,
+      type: "update",
+      title: "Caso resuelto",
+      message: "El caso 'Gato herido en Chapinero' ha sido marcado como resuelto",
+      time: "Hace 1 día",
+      read: true,
+      icon: CheckCircle,
+      color: "text-green-500",
+      bg: "bg-green-50",
+    },
+    {
+      id: 5,
+      type: "reminder",
+      title: "Recordatorio",
+      message: "No olvides completar la información de tu reporte pendiente",
+      time: "Hace 2 días",
+      read: true,
+      icon: Clock,
+      color: "text-orange-500",
+      bg: "bg-orange-50",
+    },
+  ];
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-16 px-6">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-3xl font-bold text-white">
+            Notificaciones
+          </h1>
+          {unreadCount > 0 && (
+            <div className="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">{unreadCount}</span>
+            </div>
+          )}
+        </div>
+        <p className="text-white/90 text-sm">
+          Mantente al día con tus alertas
+        </p>
+      </div>
+
+      <div className="-mt-8 px-6 pb-6">
+        {unreadCount > 0 && (
+          <div className="bg-white rounded-2xl shadow-md p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#FF6B35]/10 rounded-full flex items-center justify-center">
+                  <Bell className="w-5 h-5 text-[#FF6B35]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800 text-sm">
+                    {unreadCount} notificaciones nuevas
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Tienes actualizaciones importantes
+                  </p>
+                </div>
+              </div>
+              <button className="text-[#1E88E5] text-xs font-medium">
+                Marcar leídas
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {notifications.map((notification) => {
+            const Icon = notification.icon;
+            return (
+              <div
+                key={notification.id}
+                className={`bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg cursor-pointer ${
+                  !notification.read ? "border-l-4 border-l-[#1E88E5]" : ""
+                }`}
+              >
+                <div className="p-4">
+                  <div className="flex gap-3">
+                    <div className={`w-10 h-10 ${notification.bg} rounded-full flex items-center justify-center flex-shrink-0`}>
+                      <Icon className={`w-5 h-5 ${notification.color}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className={`font-semibold text-gray-800 text-sm ${!notification.read ? "font-bold" : ""}`}>
+                          {notification.title}
+                        </h3>
+                        {!notification.read && (
+                          <div className="w-2 h-2 bg-[#1E88E5] rounded-full flex-shrink-0 mt-1.5" />
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed mb-2">
+                        {notification.message}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">
+                          {notification.time}
+                        </span>
+                        {!notification.read && (
+                          <button className="text-xs text-[#1E88E5] font-medium">
+                            Marcar como leída
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {notifications.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Bell className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              No hay notificaciones
+            </h3>
+            <p className="text-sm text-gray-600">
+              Te avisaremos cuando haya novedades
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+📄 src/app/components/Profile.tsx
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Shield,
+  Settings,
+  Bell,
+  LogOut,
+  ChevronRight,
+  Award,
+  FileText
+} from "lucide-react";
+
+export function Profile() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("info");
+
+  const userStats = [
+    { label: "Reportes", value: "12", icon: FileText, color: "bg-blue-500" },
+    { label: "Resueltos", value: "8", icon: Shield, color: "bg-green-500" },
+    { label: "Puntos", value: "450", icon: Award, color: "bg-orange-500" },
+  ];
+
+  const recentActivity = [
+    { action: "Reportaste un caso", detail: "Perro abandonado en Kennedy", date: "Hace 2 horas" },
+    { action: "Caso actualizado", detail: "Gato herido - En proceso", date: "Hace 5 horas" },
+    { action: "Caso resuelto", detail: "Maltrato animal reportado", date: "Hace 1 día" },
+  ];
+
+  const settingsOptions = [
+    { label: "Notificaciones", icon: Bell, action: () => {} },
+    { label: "Privacidad", icon: Shield, action: () => {} },
+    { label: "Configuración", icon: Settings, action: () => {} },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-r from-[#1E88E5] to-[#1565C0] pt-8 pb-20 px-6">
+        <div className="flex flex-col items-center">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl mb-4">
+            <User className="w-12 h-12 text-[#1E88E5]" strokeWidth={2} />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">
+            Juan Pérez
+          </h1>
+          <p className="text-white/90 text-sm mb-4">
+            Ciudadano Activo
+          </p>
+          <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+            <Award className="w-4 h-4 text-yellow-300" />
+            <span className="text-white text-sm font-medium">
+              Nivel 5 - Protector Animal
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="-mt-12 px-6 pb-6 space-y-6">
+        <div className="grid grid-cols-3 gap-3">
+          {userStats.map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <div key={idx} className="bg-white rounded-2xl shadow-md p-4 text-center">
+                <div className={`w-10 h-10 ${stat.color} rounded-xl flex items-center justify-center mx-auto mb-2`}>
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <p className="text-xl font-bold text-gray-800 mb-1">
+                  {stat.value}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {stat.label}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab("info")}
+              className={`flex-1 py-3 text-sm font-medium transition ${
+                activeTab === "info"
+                  ? "text-[#1E88E5] border-b-2 border-[#1E88E5]"
+                  : "text-gray-600"
+              }`}
+            >
+              Información
+            </button>
+            <button
+              onClick={() => setActiveTab("activity")}
+              className={`flex-1 py-3 text-sm font-medium transition ${
+                activeTab === "activity"
+                  ? "text-[#1E88E5] border-b-2 border-[#1E88E5]"
+                  : "text-gray-600"
+              }`}
+            >
+              Actividad
+            </button>
+          </div>
+
+          {activeTab === "info" && (
+            <div className="p-5 space-y-4">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Nombre completo</p>
+                  <p className="text-sm font-medium text-gray-800">Juan Pérez González</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Correo electrónico</p>
+                  <p className="text-sm font-medium text-gray-800">juan.perez@email.com</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Phone className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Teléfono</p>
+                  <p className="text-sm font-medium text-gray-800">+57 300 123 4567</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-orange-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Ubicación</p>
+                  <p className="text-sm font-medium text-gray-800">Kennedy, Bogotá D.C.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "activity" && (
+            <div className="p-5">
+              <h3 className="font-semibold text-gray-800 mb-4 text-sm">
+                Actividad Reciente
+              </h3>
+              <div className="space-y-3">
+                {recentActivity.map((activity, idx) => (
+                  <div key={idx} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0">
+                    <div className="w-8 h-8 bg-[#1E88E5]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-4 h-4 text-[#1E88E5]" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-800 mb-1">
+                        {activity.action}
+                      </p>
+                      <p className="text-xs text-gray-600 mb-1">
+                        {activity.detail}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {activity.date}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-md p-5">
+          <h3 className="font-semibold text-gray-800 mb-4 text-sm">
+            Configuración
+          </h3>
+          <div className="space-y-2">
+            {settingsOptions.map((option, idx) => {
+              const Icon = option.icon;
+              return (
+                <button
+                  key={idx}
+                  onClick={option.action}
+                  className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-5 h-5 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-800">
+                      {option.label}
+                    </span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <button
+          onClick={() => navigate("/login")}
+          className="w-full flex items-center justify-center gap-2 bg-white border-2 border-red-200 text-red-600 py-3 rounded-xl font-medium hover:bg-red-50 transition"
+        >
+          <LogOut className="w-5 h-5" />
+          Cerrar Sesión
+        </button>
+
+        <p className="text-center text-xs text-gray-500 pt-4">
+          SITRAMA v1.0.0 • Bogotá D.C., Colombia
+        </p>
+      </div>
+    </div>
+  );
+}
+📦 Dependencias principales (package.json)
+{
+  "dependencies": {
+    "lucide-react": "0.487.0",
+    "react-router": "7.13.0",
+    "tailwindcss": "4.1.12"
+  }
+}
